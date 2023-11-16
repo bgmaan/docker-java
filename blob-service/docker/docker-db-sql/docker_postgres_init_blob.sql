@@ -1,0 +1,1 @@
+create table song-blobs (id bigserial not null, blob bytea, primary key (id));

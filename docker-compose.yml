@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server/
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 8761:8761
+    env_file:
+      - ./eureka-server/docker/.env_eureka
+    networks:
+      - net
+
+  blob:
+    build:
+      context: ./blob-service/
+      dockerfile: ./docker/Dockerfile
+    depends_on:
+      - db_blob
+    ports:
+      - 8080:8080
+    env_file:
+      - ./blob-service/docker/.env_blob
+    networks:
+      - net
+
+  metadata:
+    build:
+      context: ./metadata-service/
+      dockerfile: ./docker/Dockerfile
+    depends_on:
+      - db_metadata
+    ports:
+      - 8081:8081
+    networks:
+      - net
+    env_file:
+      - ./metadata-service/docker/.env_metadata
+
+  db_blob:
+    image: postgres:14-alpine
+    ports:
+      - 5456:5456
+    volumes:
+      - ./blob-service/docker/docker-db-sql/docker_postgres_init_blob.sql:/docker-entrypoint-initdb.d/docker_postgres_init_blob.sql
+    env_file:
+      - ./blob-service/docker/.env_blob
+    networks:
+      - net
+  db_metadata:
+    image: postgres:14-alpine
+    volumes:
+      - ./metadata-service/docker/docker-db-sql/docker_postgres_metadata_init.sql:/docker-entrypoint-initdb.d/docker_postgres_metadata_init.sql
+    env_file:
+      - ./metadata-service/docker/.env_metadata
+    networks:
+      - net
+networks:
+  net:

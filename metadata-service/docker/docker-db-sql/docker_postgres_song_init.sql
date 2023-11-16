@@ -1,0 +1,1 @@
+create table metadata (id bigserial not null,  resourceid BIGINT,  name VARCHAR,  artist VARCHAR,  album VARCHAR,  length VARCHAR,  year VARCHAR, primary key (id));
